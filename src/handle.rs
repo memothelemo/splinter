@@ -125,7 +125,7 @@ impl ShardHandle {
         match self.0.close_tx.try_send((frame, None)) {
             Ok(()) => Ok(()),
             Err(flume::TrySendError::Full(..)) => Ok(()),
-            Err(..) => return Err(QueueShutdownError(flume::SendError(()))),
+            Err(..) => Err(QueueShutdownError(flume::SendError(()))),
         }
     }
 }

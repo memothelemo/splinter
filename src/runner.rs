@@ -330,7 +330,7 @@ impl ShardRunner {
         event: &twilight_gateway::Event,
     ) {
         if let Event::GatewayClose(frame) = event {
-            let error = InitShardError::from_fatal_close(self.shard.id(), &frame);
+            let error = InitShardError::from_fatal_close(self.shard.id(), frame);
             if let Some(error) = error {
                 *action = Some(ShardRunnerAction::FatalError { error: Some(error) });
             }

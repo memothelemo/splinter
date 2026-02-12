@@ -76,9 +76,7 @@ impl ShardManager {
             .for_each(|fut| futures.push(fut));
 
         while let Some(entry) = futures.next().await {
-            if let Err(error) = entry {
-                return Err(error);
-            }
+            entry?;
         }
 
         debug!("initialized {total} shard(s)");

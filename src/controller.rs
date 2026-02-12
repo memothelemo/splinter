@@ -106,7 +106,7 @@ impl ShardController {
 
         let mut shards = self.shards.lock().await;
         if let Some(handle) = shards.insert(id, handle.clone()) {
-            let _ = handle.close(GOT_RECONNECTED_FRAME);
+            _ = handle.queue_close(GOT_RECONNECTED_FRAME);
         }
 
         handle
