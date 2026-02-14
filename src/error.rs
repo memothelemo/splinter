@@ -67,6 +67,16 @@ impl InitShardError {
     }
 }
 
+impl InitShardError {
+    #[must_use]
+    pub(crate) fn connect(id: ShardId, error: Box<dyn Error + Send + Sync>) -> Self {
+        Self {
+            id,
+            kind: InitShardErrorType::Connect(error),
+        }
+    }
+}
+
 impl Display for InitShardError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.kind() {

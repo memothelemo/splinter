@@ -5,8 +5,7 @@ use twilight_gateway::{queue::InMemoryQueue, EventTypeFlags, Intents};
 
 #[tokio::main]
 async fn main() {
-    example_common::init_tracing("splinter=trace,info");
-    // example_common::init_tracing("splinter=trace,twilight_gateway::shard=debug,info");
+    example_common::init_tracing("splinter=debug,info");
 
     let config = CommonShardConfig {
         event_type_flags: EventTypeFlags::all(),
@@ -30,7 +29,7 @@ async fn main() {
         }
     });
 
-    let manager = ShardManager::new(config, ShardingRange::new(0, 15, 16));
+    let manager = ShardManager::new(config, ShardingRange::new(0, 1, 2));
     if let Some(result) = cancel_token.run_until_cancelled(manager.start_all()).await {
         result.unwrap();
         tracing::info!("done waiting for shards to start");

@@ -291,7 +291,6 @@ impl ShardRunner {
 
     /// `true` - continue looping
     /// `false` - stop looping
-    #[tracing::instrument(skip_all, level = "debug", fields(?event))]
     async fn default_handle_event(&mut self, event: ShardRunnerEvent) -> bool {
         match event {
             ShardRunnerEvent::Close {
