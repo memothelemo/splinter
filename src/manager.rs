@@ -6,13 +6,11 @@ use tokio::sync::{RwLock, oneshot};
 use twilight_gateway::{CloseFrame, ShardId};
 
 use crate::config::CommonShardConfig;
-use crate::controller::{ShardController, ShardControllerMessage};
 use crate::error::{CloseShardError, InitShardError, InitShardErrorType};
 use crate::handle::ShardHandle;
 use crate::range::ShardingRange;
 
 pub struct ShardManager {
-    controller: flume::Sender<ShardControllerMessage>,
     range: AtomicCell<ShardingRange>,
     shards: Arc<RwLock<HashMap<ShardId, ShardHandle>>>,
 }
@@ -23,20 +21,7 @@ impl ShardManager {
         let config = Arc::new(config);
         let shards = Arc::new(RwLock::new(HashMap::new()));
 
-        let mut controller = ShardController {
-            config,
-            shards: shards.clone(),
-        };
-
-        let (controller_tx, controller_rx) = flume::unbounded();
-        tokio::spawn(async move {
-            tracing::debug!("spawned shard controller");
-            controller.run(controller_rx).await;
-            tracing::debug!("shard controller closed");
-        });
-
         Arc::new(Self {
-            controller: controller_tx,
             range: AtomicCell::new(range),
             shards,
         })
@@ -111,52 +96,46 @@ impl ShardManager {
 impl ShardManager {
     #[tracing::instrument(skip_all, level = "debug", fields(%id))]
     async fn boot(&self, id: ShardId) -> Result<ShardHandle, InitShardError> {
-        let (handle_tx, handle_rx) = oneshot::channel();
-        let (return_tx, return_rx) = oneshot::channel();
-        self.send_to_controller(ShardControllerMessage::SpawnShard {
-            id,
-            handle_tx: Some(handle_tx),
-            return_tx: Some(return_tx),
-        });
+        todo!()
+        // let (handle_tx, handle_rx) = oneshot::channel();
+        // let (return_tx, return_rx) = oneshot::channel();
+        // self.send_to_controller(ShardControllerMessage::SpawnShard {
+        //     id,
+        //     handle_tx: Some(handle_tx),
+        //     return_tx: Some(return_tx),
+        // });
 
-        // Wait for the handle, then the result whether it succeeded or not.
-        let handle = handle_rx
-            .await
-            .map_err(|_| InitShardError::controller_closed(id))?;
+        // // Wait for the handle, then the result whether it succeeded or not.
+        // let handle = handle_rx
+        //     .await
+        //     .map_err(|_| InitShardError::controller_closed(id))?;
 
-        let result = return_rx
-            .await
-            .map_err(|_| InitShardError::controller_closed(id))?;
+        // let result = return_rx
+        //     .await
+        //     .map_err(|_| InitShardError::controller_closed(id))?;
 
-        match result {
-            Ok(..) => Ok(handle),
-            Err(Left(error)) => Err(error),
-            Err(Right(error)) => Err(InitShardError {
-                id,
-                kind: InitShardErrorType::Connect(Box::new(error)),
-            }),
-        }
+        // match result {
+        //     Ok(..) => Ok(handle),
+        //     Err(Left(error)) => Err(error),
+        //     Err(Right(error)) => Err(InitShardError {
+        //         id,
+        //         kind: InitShardErrorType::Connect(Box::new(error)),
+        //     }),
+        // }
     }
 
     async fn spawn(&self, id: ShardId) -> Result<ShardHandle, InitShardError> {
-        let (handle_tx, handle_rx) = oneshot::channel();
-        self.send_to_controller(ShardControllerMessage::SpawnShard {
-            id,
-            handle_tx: Some(handle_tx),
-            return_tx: None,
-        });
+        todo!()
+        // let (handle_tx, handle_rx) = oneshot::channel();
+        // self.send_to_controller(ShardControllerMessage::SpawnShard {
+        //     id,
+        //     handle_tx: Some(handle_tx),
+        //     return_tx: None,
+        // });
 
-        handle_rx.await.map_err(|_| InitShardError {
-            id,
-            kind: InitShardErrorType::ControllerClosed,
-        })
-    }
-}
-
-impl ShardManager {
-    fn send_to_controller(&self, message: ShardControllerMessage) {
-        if let Err(error) = self.controller.send(message) {
-            tracing::warn!(?error, "failed to send message to the controller");
-        }
+        // handle_rx.await.map_err(|_| InitShardError {
+        //     id,
+        //     kind: InitShardErrorType::ControllerClosed,
+        // })
     }
 }

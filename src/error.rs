@@ -34,7 +34,6 @@ pub struct InitShardError {
 
 #[derive(Debug)]
 pub enum InitShardErrorType {
-    ControllerClosed,
     Connect(Box<dyn Error + Send + Sync>),
     Gateway(CloseFrame<'static>),
 }
@@ -56,7 +55,6 @@ impl InitShardError {
     #[must_use = "consuming the error and retrieving the source has no effect if left unused"]
     pub fn into_source(self) -> Option<Box<dyn Error + Send + Sync>> {
         match self.kind {
-            InitShardErrorType::ControllerClosed => None,
             InitShardErrorType::Connect(source) => Some(source),
             InitShardErrorType::Gateway(..) => None,
         }
@@ -69,22 +67,9 @@ impl InitShardError {
     }
 }
 
-impl InitShardError {
-    #[must_use]
-    pub(crate) const fn controller_closed(id: ShardId) -> Self {
-        Self {
-            id,
-            kind: InitShardErrorType::ControllerClosed,
-        }
-    }
-}
-
 impl Display for InitShardError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.kind() {
-            InitShardErrorType::ControllerClosed => {
-                f.write_str("shard controller is unexpectedly closed")
-            }
             InitShardErrorType::Connect(..) => f.write_str("failed to reconnect to the gateway"),
             InitShardErrorType::Gateway(frame) => {
                 write!(f, "gateway closed with code {}", frame.code)
@@ -96,7 +81,6 @@ impl Display for InitShardError {
 impl Error for InitShardError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self.kind() {
-            InitShardErrorType::ControllerClosed => None,
             InitShardErrorType::Connect(source) => Some(&**source as &(dyn Error + 'static)),
             InitShardErrorType::Gateway(..) => None,
         }
