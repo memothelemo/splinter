@@ -200,6 +200,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
+name = "either"
+version = "1.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -221,8 +227,23 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "dotenvy",
+ "example-common",
  "rustls",
  "splinter",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
+ "twilight-gateway",
+ "twilight-http",
+]
+
+[[package]]
+name = "example-common"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -398,6 +419,12 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
+version = "0.15.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
+
+[[package]]
+name = "hashbrown"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
@@ -507,7 +534,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7714e70437a7dc3ac8eb7e6f8df75fd8eb422675fc7678aff7364301092b1017"
 dependencies = [
  "equivalent",
- "hashbrown",
+ "hashbrown 0.16.1",
 ]
 
 [[package]]
@@ -1036,6 +1063,7 @@ name = "splinter"
 version = "0.1.0"
 dependencies = [
  "crossbeam",
+ "either",
  "flume",
  "futures",
  "pin-project-lite",
@@ -1044,6 +1072,7 @@ dependencies = [
  "tokio",
  "tracing",
  "twilight-gateway",
+ "twilight-model",
 ]
 
 [[package]]
@@ -1188,7 +1217,10 @@ checksum = "9ae9cec805b01e8fc3fd2fe289f89149a9b66dd16786abd8b19cfa7b48cb0098"
 dependencies = [
  "bytes",
  "futures-core",
+ "futures-io",
  "futures-sink",
+ "futures-util",
+ "hashbrown 0.15.5",
  "pin-project-lite",
  "slab",
  "tokio",
@@ -1350,7 +1382,7 @@ version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0515b0c30814068a7540fcb5f58b634259ca453fa335d42c3b2c8f2b06ac6a59"
 dependencies = [
- "hashbrown",
+ "hashbrown 0.16.1",
  "tokio",
  "tokio-util",
  "tracing",

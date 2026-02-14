@@ -6,6 +6,7 @@ edition = "2024"
 
 [dependencies]
 crossbeam = "0.8"
+either = "1.15"
 flume = "0.12"
 futures = "0.3"
 pin-project-lite = "0.2"
@@ -14,6 +15,47 @@ thiserror = "2.0"
 tokio = { version = "1.49", features = ["sync"] }
 tracing = "0.1"
 twilight-gateway = { version = "0.17" }
+twilight-model = "0.17.1"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+rust_2018_idioms = { level = "warn", priority = -1 }
+
+[lints.clippy]
+mem_forget = "forbid"
+
+enum_glob_use = "warn"
+equatable_if_let = "warn"
+exit = "warn"
+filter_map_next = "warn"
+fn_params_excessive_bools = "warn"
+if_let_mutex = "warn"
+implicit_clone = "warn"
+inefficient_to_string = "warn"
+lossy_float_literal = "warn"
+manual_let_else = "warn"
+match_same_arms = "warn"
+match_wildcard_for_single_variants = "warn"
+must_use_candidate = "warn"
+needless_borrow = "warn"
+needless_continue = "warn"
+needless_pass_by_ref_mut = "warn"
+needless_pass_by_value = "warn"
+option_option = "warn"
+redundant_clone = "warn"
+ref_option = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+return_self_not_must_use = "warn"
+single_match_else = "warn"
+str_to_string = "warn"
+suboptimal_flops = "warn"
+todo = "warn"
+trivially_copy_pass_by_ref = "warn"
+uninlined_format_args = "warn"
+unnested_or_patterns = "warn"
+unused_self = "warn"
+use_self = "warn"
 
 [workspace]
 members = ["examples/*"]
@@ -28,6 +70,7 @@ rust-version = "1.92.0"
 anyhow = "1.0.101"
 dotenvy = "0.15.7"
 tokio = { version = "1.49.0", features = ["full"] }
+tokio-util = { version = "0.7.18", features = ["full"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 twilight-gateway = "0.17.1"
