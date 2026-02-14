@@ -5,11 +5,11 @@ use std::sync::Arc;
 use tokio::sync::{RwLock, oneshot};
 use twilight_gateway::{CloseFrame, ShardId};
 
-use crate::ShardRunner;
 use crate::config::CommonShardConfig;
 use crate::error::{Blocked, CloseShardError, InitShardError};
 use crate::handle::ShardHandle;
 use crate::range::ShardingRange;
+use crate::runner::ShardRunner;
 
 pub struct ShardManager {
     config: Arc<CommonShardConfig>,
