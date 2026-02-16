@@ -1,5 +1,5 @@
 [package]
-name = "example-basic-usage"
+name = "example-basic-runner-usage"
 version = "0.1.0"
 edition.workspace = true
 publish.workspace = true
@@ -11,7 +11,6 @@ splinter = { path = "../.." }
 
 anyhow = { workspace = true }
 dotenvy = { workspace = true }
-futures = { workspace = true }
 rustls = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
