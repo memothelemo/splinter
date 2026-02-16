@@ -1,17 +1,18 @@
-use futures::StreamExt;
 use splinter::config::reconnect_strategies::MaxAttempts;
-use splinter::{ArcQueue, ShardConfig, ShardManager, ShardingRange};
+use splinter::shard_runner::ShardRunner;
+use splinter::{ArcQueue, ShardConfig};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tokio_util::sync::CancellationToken;
 use twilight_gateway::{queue::InMemoryQueue, EventTypeFlags, Intents};
+use twilight_gateway::{CloseFrame, ShardId};
 
 #[tokio::main]
 async fn main() {
     example_common::init_tracing("splinter=debug,info");
 
     let config = ShardConfig {
-        event_type_flags: EventTypeFlags::GATEWAY_HELLO | EventTypeFlags::READY,
+        event_type_flags: EventTypeFlags::all(),
         intents: Intents::GUILDS | Intents::MESSAGE_CONTENT,
         queue: ArcQueue::new(InMemoryQueue::default()),
         reconnect_strategy: Some(Arc::new(MaxAttempts::new(2))),
@@ -32,19 +33,30 @@ async fn main() {
         }
     });
 
-    let (manager, mut stream) = ShardManager::new(config, ShardingRange::new(0, 15, 16));
-    tokio::spawn(async move {
-        while let Some((handle, event)) = stream.next().await {
-            tracing::info!("{}: {:?}", handle.id(), event.kind());
+    let mut runner = ShardRunner::new(ShardId::ONE, Arc::new(config)).await;
+    loop {
+        if runner.is_fatally_closed() {
+            break;
         }
-    });
 
-    if let Some(result) = cancel_token.run_until_cancelled(manager.start_all()).await {
-        result.unwrap();
-        tracing::info!("done waiting for shards to start");
+        let Some((signal, event)) = cancel_token.run_until_cancelled(runner.recv()).await else {
+            break;
+        };
+
+        if let Some(event) = event {
+            tracing::info!(
+                event.kind = ?event.kind(),
+                shard.id = %ShardId::ONE,
+                "received event"
+            );
+        }
+
+        if let Some(signal) = signal {
+            tracing::info!(?signal, "received signal");
+        }
     }
-    cancel_token.cancelled().await;
 
-    tracing::info!("closing all shards");
-    manager.shutdown_all().await;
+    if !runner.is_fatally_closed() {
+        runner.close(CloseFrame::NORMAL).await;
+    }
 }

@@ -1,6 +1,7 @@
 use std::num::NonZeroU32;
 use thiserror::Error;
 
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ShardingRange {
     /// The starting shard index (inclusive).
