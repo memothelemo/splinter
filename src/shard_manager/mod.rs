@@ -12,6 +12,7 @@ use tokio::sync::RwLock;
 use twilight_gateway::{CloseFrame, ShardId};
 
 use std::collections::HashMap;
+use std::fmt;
 use std::sync::Arc;
 
 use crate::config::ShardConfig;
@@ -186,5 +187,15 @@ impl ShardManager {
             // If it got disconnected by other than NORMAL, the runner will not terminate.
             _ = handle.close(CloseFrame::NORMAL);
         }
+    }
+}
+
+impl fmt::Debug for ShardManager {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ShardManager")
+            .field("config", &self.config)
+            .field("range", &self.range)
+            .field("shards", &self.shards)
+            .finish_non_exhaustive()
     }
 }

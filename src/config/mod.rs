@@ -1,3 +1,4 @@
+use std::fmt;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use twilight_gateway::{EventTypeFlags, Intents, ShardId};
@@ -140,4 +141,23 @@ pub trait ReconnectStrategy: std::fmt::Debug + Send + Sync {
     /// This is called by the runner when a shard successfully connects and
     /// completes its handshake, resetting any attempt counters or backoff state.
     fn reset(&self) {}
+}
+
+impl fmt::Debug for ShardConfig {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        struct Redacted;
+
+        impl fmt::Debug for Redacted {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                f.write_str("<redacted>")
+            }
+        }
+
+        f.debug_struct("ShardConfig")
+            .field("event_type_flags", &self.event_type_flags)
+            .field("intents", &self.intents)
+            .field("resume_url", &self.resume_url)
+            .field("token", &Redacted)
+            .finish_non_exhaustive()
+    }
 }

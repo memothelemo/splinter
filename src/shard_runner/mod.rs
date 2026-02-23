@@ -6,6 +6,7 @@ pub mod signal;
 pub use self::signal::*;
 
 use futures::StreamExt;
+use std::fmt;
 use std::sync::Arc;
 use twilight_gateway::error::{ReceiveMessageError, ReceiveMessageErrorType};
 use twilight_gateway::{CloseFrame, EventType, Shard, ShardId, ShardState};
@@ -302,5 +303,15 @@ impl ShardRunner {
         let event_type = extract_event_type(&json);
         let event = twilight_gateway::parse(json, self.config.event_type_flags)?.map(Into::into);
         Ok((event, event_type))
+    }
+}
+
+impl fmt::Debug for ShardRunner {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ShardRunner")
+            .field("config", &self.config)
+            .field("reconnect_attempts", &self.reconnect_attempts)
+            .field("shard", &self.shard)
+            .finish()
     }
 }
